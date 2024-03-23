@@ -1,42 +1,49 @@
-import {Link} from 'react-router-dom'
+import {useContext, useEffect} from 'react'
+import {Context} from '../store/appContext.jsx'
+import { toast } from "react-toastify";
 
 const List = () => {
-  const products = [
-    {
-      id: "1",
-      title: "Playstation",
-      description:
-        "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Distinctio, dicta, sapiente repellat, officia repellendus pariatur accusamus dolor facere eveniet quisquam architecto magnam fuga totam voluptatem id? Maiores ad dolore vel exercitationem voluptatem unde ratione suscipit? Voluptatem nobis, maxime quos, ipsa tempora eligendi, aperiam esse reprehenderit qui illo accusantium tempore maiores?",
-      price: 600000,
-    },
-    {
-      id: "2",
-      title: "xbox",
-      description:
-        "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Distinctio, dicta, sapiente repellat, officia repellendus pariatur accusamus dolor facere eveniet quisquam architecto magnam fuga totam voluptatem id? Maiores ad dolore vel exercitationem voluptatem unde ratione suscipit? Voluptatem nobis, maxime quos, ipsa tempora eligendi, aperiam esse reprehenderit qui illo accusantium tempore maiores?",
-      price: 600000,
-    },
-    {
-      id: "3",
-      title: "WII",
-      description:
-        "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Distinctio, dicta, sapiente repellat, officia repellendus pariatur accusamus dolor facere eveniet quisquam architecto magnam fuga totam voluptatem id? Maiores ad dolore vel exercitationem voluptatem unde ratione suscipit? Voluptatem nobis, maxime quos, ipsa tempora eligendi, aperiam esse reprehenderit qui illo accusantium tempore maiores?",
-      price: 600000,
-    },
-  ];
+// useState
+  const { store, actions } = useContext(Context);
+  // const [todoList, setTodoList] = useState([])
+
+    const notify = () =>
+      toast.success("🦄 Se envio la tarea!", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+
+      // const notify = () => toast("Se envio la tarea!");
+
+  useEffect(() => {
+    actions.getTodoFetch();
+  }, [store.messages]);
+
   return (
     <>
-      <h1>List</h1>
-      <ul>
-        {
-          products.map((product)=> {
-            return (
-              <li key={product.id}>
-                <Link to={`/details/${product.id}`}>{product.title}</Link>
-              </li>
-            );
-          })
+      <h1>Task</h1>
+      <input
+        onChange={actions.handleChange}
+        onKeyDown={(e) =>{
+          actions.postTodosFetch(e, [...store.todosFetch, store.task], notify),
+          notify}
         }
+        type="text"
+        name="task"
+        id="task"
+        value={store.task?.label}
+      />
+      <ul>
+        {Array.isArray(store.todosFetch) &&
+          store.todosFetch?.map((task) => {
+            return <li key={task.id}> {task.label} </li>;
+          })}
       </ul>
     </>
   );
